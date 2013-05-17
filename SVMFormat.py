@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from sys import argv, exit, stderr, stdin, stdout
+from nltk.stem.snowball import SpanishStemmer
 
 def LoadVocabulary(fname):
     V = {}
     try:
         fvoc = open(fname, 'r')
         for w in fvoc:
-            w = w.strip()
+            w = w.strip().decode('utf-8')
             if w not in V: 
                 V[w] = len(V)
         fvoc.close()
@@ -46,6 +46,7 @@ def LoadLabels(fname):
 
 def ProcessCorpus(V, L):
     try:
+        stem = SpanishStemmer()
         for l in stdin:
             l = l.split()
             if len(l) < 3: 
@@ -55,11 +56,14 @@ def ProcessCorpus(V, L):
             uid = l[1]
             lv = [0 for w in V]
             for w in l[2:]:
+                w = stem.stem(w.decode('utf-8'))
                 d = V.get(w, None)
                 if d is None: 
-                    stderr.write('Warning: \"%s\" not in the lexicon\n' % w);
+                    #stderr.write('Warning: \"%s\" not in the lexicon\n' % w);
                     continue
                 lv[d] = lv[d] + 1
+            if sum(lv) == 0:
+                stderr.write('Warning: %s with null vector. Label: %d\n' % (tid, L[l[0]]) )
             stdout.write('%d ' % L[l[0]])
             for i in range(len(lv)):
                 stdout.write('%d:%d ' % (i+1, lv[i]))

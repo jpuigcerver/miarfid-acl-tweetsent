@@ -1,7 +1,5 @@
 function [X, Y] = LoadSVMFile( fname )
-%LOADSVMFILE Summary of this function goes here
-%   Detailed explanation goes here
-
+%LOADSVMFILE Load svm_light data format into two matrices (data and labels)
 fid = fopen(fname, 'r');
 assert(fid >= 0, ['File "' fname '" could not be opened']);
 X=[]; Y=[];
@@ -14,6 +12,5 @@ while 1
     Y = [Y; cl];
 end
 fclose(fid);
-
 end
 
